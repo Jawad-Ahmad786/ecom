@@ -31,11 +31,15 @@ class ProductReviewsController extends Controller
     public function show(Product $product)
     {
        $reviews = $this->productReviewsService->show($product);
-
+    if($reviews->isEmpty()){
+        return response()->json([
+            'message' => 'There are no Reviews for this product',
+        ], 404);
+    }
         return response()->json([
             'message' => 'Getting Product Reviews Successfully',
             'reviews' => $reviews
-        ]);
+        ], 200);
     }
   public function destroy(ProductReview $productReview)
   {

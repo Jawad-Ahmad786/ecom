@@ -13,7 +13,11 @@ class CategoriesController extends Controller
     public function index()
     {
         $categories = Category::all();
-
+    if($categories->isEmpty()){
+        return response()->json([
+            'message' => 'No Categories found',
+        ], 404);
+    }
         return response()->json([
             'message' => 'Getting Categories Successfully',
             'categories' => $categories

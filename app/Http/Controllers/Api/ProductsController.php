@@ -27,10 +27,15 @@ class ProductsController extends Controller
     {
         $products = $this->productsService->index();
 
+     if($products->isEmpty()){
+         return response()->json([
+             'message' => 'No Products Found',
+         ], 404);
+     }
         return response()->json([
             'message' => 'Getting Products Successfully',
             'products' => $products
-        ]);
+        ], 200);
     }
     public function store(StoreRequest $request)
     {

@@ -12,7 +12,11 @@ class BrandsController extends Controller
     public function index()
     {
         $brands = Brand::all();
-
+     if($brands->isEmpty()){
+         return response()->json([
+             'message' => 'No Brands Found',
+         ], 404);
+     }
         return response()->json([
             'message' => 'Getting Brands Successfully',
             'brands' => $brands

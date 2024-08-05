@@ -23,7 +23,6 @@ class ProductImagesService
           }
           return true;
       } catch(\Exception $e){
-           Log::error("Error when uploading file", $e->getMessage());
            return "An error occured while uploading images.";
       }
     }

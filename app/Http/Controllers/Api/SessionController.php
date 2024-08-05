@@ -29,7 +29,7 @@ class SessionController extends Controller
         return response()->json([
             'token' => $token,
             'message' => 'Login Successfully'
-        ]);
+        ], 200);
     }
     public function destroy(Request $request)
     {
@@ -37,6 +37,6 @@ class SessionController extends Controller
 
         return response()->json([
             'message' => 'Logout Successfully'
-        ]);
+        ], 200);
     }
 }
