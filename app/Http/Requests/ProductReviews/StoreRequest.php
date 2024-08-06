@@ -32,7 +32,7 @@ class StoreRequest extends FormRequest
     {
         $attributes = [
              'user_id.exists' => 'The provided User does not exist.',
-             'rating' => 'Please give rating in b/w 1,2,3,4,5'
+             'rating.in' => 'The rating must be between 1 and 5.',
         ];
         return $attributes;
     }
