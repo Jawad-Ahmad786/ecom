@@ -37,7 +37,7 @@ class UpdateRequest extends FormRequest
             'status' => ['sometimes', 'boolean'],
             'featured' => ['sometimes', 'boolean'],
             'discount' => ['sometimes', 'integer'],
-            'images' => ['required', 'array'],
+            'images' => ['sometimes', 'array'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
     }

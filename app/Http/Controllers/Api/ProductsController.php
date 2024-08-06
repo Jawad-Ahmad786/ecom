@@ -60,7 +60,9 @@ class ProductsController extends Controller
           $this->productsService->update($product, $data);
 
 //         Update Product Images
-          $this->productImagesService->storeImages($product, $data['images'], true);
+       if($request->has('images')) {
+           $this->productImagesService->storeImages($product, $data['images'], true);
+       }
 
           return response()->json([
               'message' => 'Product Updated Successfully',
