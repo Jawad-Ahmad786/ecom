@@ -65,6 +65,7 @@ class ProductsController extends Controller
               $this->imagesService->storeImages($product, $this->directory, $data['images']);
           }
           DB::commit();
+
           return response()->json([
               'message' => 'Product Updated Successfully',
               'product' => $product
