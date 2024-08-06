@@ -18,28 +18,22 @@ class ProductsService
         $products = Product::query();
 
 //        Filter by Brands
-        $products->when(request('brands') && !request('categories') , function ($query) use($brands) {
+        $products->when(request('brands'), function ($query) use($brands) {
                 $query->whereIn('brand_id', $brands);
     });
 
 //        Filter by Categories
-        $products->when(request('categories') && !request('brands'), function ($query) use($categories) {
-            $query->whereIn('category_id', $categories);
+        $products->when(request('categories'), function ($query) use($categories) {
+                $query->whereIn('category_id', $categories);
         });
 
-//        Filter by Brands and Categories Together
-        $products->when(request('brands') && request('categories'), function ($query) use($brands, $categories) {
-                $query->whereIn('brand_id', $brands);
-                $query->whereIn('category_id', $categories);
-            });
-
 //        Filter by Min Price
-        $products->when(request('min_price') && !request('max_price'), function ($query) use($minPrice){
+        $products->when(request('min_price'), function ($query) use($minPrice){
             $query->where('price', '>=', $minPrice);
         });
 
 //        Filter by Max Price
-        $products->when(request('max_price') && !request('min_price'), function ($query) use($maxPrice){
+        $products->when(request('max_price'), function ($query) use($maxPrice){
             $query->where('price', '<=', $maxPrice);
         });
 
