@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Services\ProductReviewsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductReviewsController extends Controller
 {
@@ -21,7 +22,7 @@ class ProductReviewsController extends Controller
     public function store(StoreRequest $request, Product $product)
   {
         $data = $request->validated();
-
+        $data['user_id'] = Auth::user()->id;
         $this->productReviewsService->store($product, $data);
 
         return response()->json([
