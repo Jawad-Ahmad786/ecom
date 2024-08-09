@@ -18,14 +18,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('sku')->unique();
             $table->string('slug')->unique();
-            $table->foreignIdFor(Category::class)->constrained()->onCascadeDelete();;
-            $table->foreignIdFor(Brand::class)->constrained()->onCascadeDelete();;
+            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();;
+            $table->foreignIdFor(Brand::class)->constrained()->cascadeOnDelete();;
             $table->text('description');
             $table->text('short_description')->nullable();
             $table->integer('stock');
             $table->decimal('price', 8, 2);
             $table->string('dimensions')->nullable();
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->default(true)->comment('0 means inactive and 1 means active');
             $table->boolean('featured')->default(false);
             $table->decimal('discount', 8, 2)->nullable();
             $table->timestamps();

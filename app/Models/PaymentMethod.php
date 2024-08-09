@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+class PaymentMethod extends Model
 {
     use HasFactory;
 
-    public function courier()
+    public function orderPayments()
     {
-        return $this->belongsToMany(Courier::class, 'courier_city_fee');
+        return $this->hasMany(OrderPayment::class);
     }
 }

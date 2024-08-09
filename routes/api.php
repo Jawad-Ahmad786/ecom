@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\OrderPaymentsController;
+use App\Http\Controllers\Api\OrdersController;
 use App\Http\Controllers\Api\ProductReviewsController;
 use App\Http\Controllers\Api\ProductsController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +9,10 @@ use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\SessionController;
 use App\Http\Controllers\Api\BrandsController;
 use App\Http\Controllers\Api\CategoriesController;
+
+//    Auth
+Route::post('register', [RegisterController::class, 'store']);
+Route::post('login', [SessionController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function() {
 
@@ -27,22 +33,28 @@ Route::middleware('auth:sanctum')->group(function() {
       Route::post('category/delete/{category}','destroy');
   });
 
-//  Products
+//    Products
   Route::controller(ProductsController::class)->group(function (){
         Route::get('products', 'index');
         Route::post('product', 'store');
         Route::post('product/update/{product}', 'update');
         Route::post('product/delete/{product}', 'destroy');
-
-//   Product Reviews
+  });
+//     Product Reviews
   Route::controller(ProductReviewsController::class)->group( function () {
         Route::post('product/{product}/review' ,'store');
         Route::get('product/{product}/reviews/show' ,'show');
         Route::post('product/review/{productReview}/delete' ,'destroy');
   });
- });
-
+//     Orders
+   Route::controller(OrdersController::class)->group(function (){
+       Route::get('orders', 'index');
+       Route::post('orders/place-order', 'store');
+       Route::post('orders/cancel/{order}', 'cancel');
+       Route::post('orders/delete/{order}', 'destroy');
+   });
+//   Order Payments
+   Route::controller(OrderPaymentsController::class)->group(function () {
+        Route::post('order/payments/{order}', 'store');
+   });
 });
-
-Route::post('register', [RegisterController::class, 'store']);
-Route::post('login', [SessionController::class, 'store']);
