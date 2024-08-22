@@ -7,7 +7,8 @@ use App\Http\Requests\ProductReviews\StoreRequest;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Services\ProductReviewsService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ProductReviewsController extends Controller
 {
@@ -17,18 +18,18 @@ class ProductReviewsController extends Controller
   {
       $this->productReviewsService = $productReviewsService;
   }
-
-    public function store(StoreRequest $request, Product $product)
+    public function store(StoreRequest $request, Product $product): JsonResponse
   {
         $data = $request->validated();
-
-        $this->productReviewsService->store($product, $data);
+        $data['user_id'] = Auth::user()->id;
+        $review = $this->productReviewsService->store($product, $data);
 
         return response()->json([
             'message' => 'Review created successfully',
+            'review' => $review
         ], 201);
   }
-    public function show(Product $product)
+    public function show(Product $product): JsonResponse
     {
        $reviews = $this->productReviewsService->show($product);
     if($reviews->isEmpty()){
@@ -41,7 +42,7 @@ class ProductReviewsController extends Controller
             'reviews' => $reviews
         ], 200);
     }
-  public function destroy(ProductReview $productReview)
+  public function destroy(ProductReview $productReview): JsonResponse
   {
       $this->productReviewsService->destroy($productReview->id);
 

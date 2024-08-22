@@ -2,15 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 
 class OrderPaymentsService
 {
-    public function store($data, $order)
+    public function store(array $data, Order $order): array
     {
-        $cancelStatus = OrderStatus::where('name', 'cancelled')->first()->id;
-        if ($order->statuses()->where('order_status_id', $cancelStatus)->exists()) {
+        if(Order::latestPendingOrder($order)){
+            return [
+                'status' => 'error',
+                'status_code' => 500,
+                'message' => 'Payment cannot be processed for pending orders',
+            ];
+        }
+        if (Order::cancelled($order)) {
             return [
                 'status' => 'error',
                 'status_code' => 500,
@@ -47,7 +54,10 @@ class OrderPaymentsService
        ]);
 
       $remainingAmount = $order->grand_total - $data['paid_amount'];
-
+      if($remainingAmount === 0){
+           $completedStatus = OrderStatus::where('name', 'completed')->first()->id;
+           $order->statuses()->attach($completedStatus);
+      }
       $order->update([
             'grand_total' => $remainingAmount
       ]);

@@ -23,7 +23,6 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'user_id' => ['required', 'exists:users,id'],
              'review' => ['required', 'string', 'max:255'],
              'rating' => ['required', 'integer', Rule::in([1,2,3,4,5])],
         ];
@@ -31,7 +30,6 @@ class StoreRequest extends FormRequest
     public function messages(): array
     {
         $attributes = [
-             'user_id.exists' => 'The provided User does not exist.',
              'rating.in' => 'The rating must be between 1 and 5.',
         ];
         return $attributes;

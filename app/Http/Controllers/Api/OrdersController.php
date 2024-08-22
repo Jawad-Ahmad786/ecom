@@ -3,30 +3,26 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Orders\StoreRequest;
+use App\Http\Requests\Orders\PlaceOrderRequest;
 use App\Models\Order;
-use App\Models\OrderStatus;
 use App\Services\OrdersService;
-use App\Services\OrderItemsService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
     protected OrdersService $ordersService;
-
-    protected OrderItemsService $orderItemsService;
-
-    public function __construct(OrdersService $ordersService, OrderItemsService $orderItemsService)
+    public function __construct(OrdersService $ordersService)
     {
         $this->ordersService = $ordersService;
-        $this->orderItemsService = $orderItemsService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         $orders = $this->ordersService->index();
 
-    if($orders->isEmpty())
+    if(empty($orders))
     {
          return response()->json([
              'message' => 'You have no orders',
@@ -34,76 +30,69 @@ class OrdersController extends Controller
      }
        return response()->json([
              'message' => 'Orders getting Successfully',
-             'orders' => $orders
+             'orders' => $orders,
        ], 200);
     }
 
-    public function store(StoreRequest $request)
+    public function placeOrder(PlaceOrderRequest $request, Order $order): JsonResponse
     {
         $data = $request->validated();
-        DB::beginTransaction();
-    try{
-        $order = $this->ordersService->store($data);
 
-        if(!$order)
-        {
-            return response()->json([
-                'message' => 'An error occur while creating order'
-            ], 500);
-        }
+        $courierFeeId = DB::table('courier_city_fee')
+            ->where('city_id', $data['city_id'])
+            ->where('courier_id', $data['courier_id'])
+            ->first()
+            ->id;
+        $shipment = $this->ordersService->placeOrder($order, $courierFeeId);
 
-        $orderItems = $this->orderItemsService->store($data, $order);
-
-        if(!$orderItems)
-        {
-            return response()->json([
-                'message' => 'An error occur while creating order items'
-            ], 500);
-        }
-
-        $pendingStatus = OrderStatus::where('name', 'pending')->first()->id;
-
-        $order->statuses()->attach($pendingStatus);
-
-        DB::commit();
-
+      if(!$shipment){
+          return response()->json([
+              'message' => 'Your order is already placed',
+              'shipment_details' => $shipment
+          ], 302);
+      }
         return response()->json([
-            'message' => 'Order created successfully',
-            'order' => $order
-        ], 201);
-
-    } catch(\Exception $e)
-    {
-        DB::rollBack();
-        return response()->json([
-            'message' => 'An error occur while creating order or order items',
-        ], 500);
+            'message' => 'Your Order is placed',
+            'shipment_details' => $shipment
+        ], 200);
     }
-    }
-    public function cancel(Order $order)
+    public function cancel(Order $order): JsonResponse
     {
        $cancelOrder = $this->ordersService->cancel($order);
-       if(!$cancelOrder)
+       if($cancelOrder['status'] === 'error')
        {
-           return response()->json([
-               'message' => 'Order is already cancelled',
-           ], 500);
+           return response()->json(
+               $cancelOrder['message'],
+               $cancelOrder['status_code']
+           );
        }
-       return response()->json([
-           'message' => 'Order has been cancelled successfully'
-       ], 200);
+       return response()->json(
+           $cancelOrder['message'],
+           $cancelOrder['status_code']);
     }
-    public function destroy(Order $order)
+    public function destroy(Order $order): JsonResponse
     {
-      try {
-          $this->ordersService->destroy($order);
+        $orderDeleted = $this->ordersService->destroy($order);
+       if(!$orderDeleted){
+           return response()->json([
+               'message' => 'Cannot delete order because it is completed (paid)'
+           ], 400);
+       }
           return response()->json([
               'message' => 'Order deleted successfully',
           ], 200);
-      } catch(\Exception $e) {
-          return response()->json([
-              'message' => 'Order Not Found',
-          ], 404);
-      }
+    }
+    public function trackOrder(Request $request): JsonResponse
+    {
+        $order = $this->ordersService->trackOrder($request->tracking_no);
+       if(!$order){
+           return response()->json([
+               'message' => 'Order not found for this tracking number. Please enter a valid tracking number'
+           ], 404);
+       }
+        return response()->json([
+            'message' => 'This is your order\'s current status',
+             'order' => $order
+        ], 200);
     }
 }

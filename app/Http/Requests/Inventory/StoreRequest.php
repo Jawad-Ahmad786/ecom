@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Orders;
+namespace App\Http\Requests\Inventory;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-
+             'quantity' => ['required', 'integer'],
         ];
     }
 }

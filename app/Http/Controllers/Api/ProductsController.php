@@ -8,6 +8,7 @@ use App\Http\Requests\Products\UpdateRequest;
 use App\Models\Product;
 use App\Services\ProductImagesService;
 use App\Services\ProductsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use function Pest\Laravel\json;
@@ -23,7 +24,7 @@ class ProductsController extends Controller
         $this->productsService = $productsService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         $products = $this->productsService->index();
 
@@ -37,7 +38,7 @@ class ProductsController extends Controller
             'products' => $products
         ], 200);
     }
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -52,7 +53,7 @@ class ProductsController extends Controller
             'product' => $product
         ], 201);
     }
-    public function update(UpdateRequest $request, Product $product)
+    public function update(UpdateRequest $request, Product $product): JsonResponse
     {
         $data = $request->validated();
 
@@ -67,7 +68,7 @@ class ProductsController extends Controller
               'product' => $product
           ], 200);
     }
-    public function destroy(Product $product)
+    public function destroy(Product $product): JsonResponse
     {
         $this->productImagesService->deleteImages($product);
         $this->productsService->destroy($product);

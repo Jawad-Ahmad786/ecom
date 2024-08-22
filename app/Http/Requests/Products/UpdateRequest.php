@@ -33,18 +33,17 @@ class UpdateRequest extends FormRequest
             'description' => ['required', 'string'],
             'short_description' => ['sometimes', 'string', 'max:255'],
             'stock' => ['required', 'integer'],
-            'price' => ['required', 'integer'],
+            'price' => ['required', 'numeric'],
             'status' => ['sometimes', 'boolean'],
             'featured' => ['sometimes', 'boolean'],
             'discount' => ['sometimes', 'integer'],
-            'images' => ['required', 'array'],
+            'images' => ['sometimes', 'array'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
     }
     public function messages()
     {
         $attributes = [
-            'images.required' => 'At least one image is required.',
             'category_id.exists' => 'The provided Category does not exist',
             'brand_id.exists' => 'The provided Brand does not exist'
         ];

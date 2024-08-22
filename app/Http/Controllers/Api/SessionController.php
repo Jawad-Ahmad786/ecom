@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
 class SessionController extends Controller
 {
-    public function store()
+    public function store(): JsonResponse
     {
         $attributes = request()->validate([
             'email' => ['required', 'email'],
@@ -31,7 +32,7 @@ class SessionController extends Controller
             'message' => 'Login Successfully'
         ], 200);
     }
-    public function destroy(Request $request)
+    public function destroy(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 

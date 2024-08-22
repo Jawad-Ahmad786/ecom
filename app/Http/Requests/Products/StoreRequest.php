@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
              'description' => ['required', 'string'],
              'short_description' => ['sometimes', 'string', 'max:255'],
              'stock' => ['required', 'integer'],
-             'price' => ['required', 'integer'],
+             'price' => ['required', 'numeric'],
              'status' => ['sometimes', 'boolean'],
              'featured' => ['sometimes', 'boolean'],
              'discount' => ['sometimes', 'integer'],

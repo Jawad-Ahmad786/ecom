@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\OrderPayments;
+namespace App\Http\Requests\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class PlaceOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +22,17 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'payment_method_id' => ['required', 'exists:payment_methods,id'],
-             'paid_amount' => ['required', 'integer']
+            'courier_id' => ['required', 'exists:couriers,id'],
+            'city_id' => ['required', 'exists:cities,id']
         ];
     }
-
     public function messages()
     {
         return [
-            'payment_method_id.required' => 'Payment Method is required',
-            'payment_method_id.exists' => 'Payment Method does not exist',
-            'paid_amount.required' => 'Please enter the amount to be paid',
-            'paid_amount.integer' => 'Please provide a valid amount'
+            'courier_id.required' => 'Courier is required',
+            'courier_id.exists' => 'Provided Courier does not exist',
+            'city_id.exists' => 'Provided City does not exist',
+            'city_id.required' => 'City is required',
         ];
     }
 }

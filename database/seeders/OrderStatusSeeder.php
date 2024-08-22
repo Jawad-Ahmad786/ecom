@@ -13,7 +13,7 @@ class OrderStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = ['pending', 'shipped', 'delivered', 'completed', 'cancelled'];
+        $statuses = ['pending', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'];
 
         foreach($statuses as $status) {
                     OrderStatus::create(['name' => $status]);

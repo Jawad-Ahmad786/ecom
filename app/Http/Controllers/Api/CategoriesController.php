@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Categories\StoreRequest;
 use App\Http\Requests\Categories\UpdateRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class CategoriesController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $categories = Category::all();
     if($categories->isEmpty()){
@@ -23,7 +23,7 @@ class CategoriesController extends Controller
             'categories' => $categories
         ], 200);
     }
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): JsonResponse
     {
         $category = Category::create($request->validated());
 
@@ -33,7 +33,7 @@ class CategoriesController extends Controller
         ], 201);
     }
 
-    public function update(UpdateRequest $request, Category $category)
+    public function update(UpdateRequest $request, Category $category): JsonResponse
     {
         $category->update($request->validated());
 
@@ -43,7 +43,7 @@ class CategoriesController extends Controller
         ], 200);
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category): JsonResponse
     {
         $category->delete();
 

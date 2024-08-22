@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderPaymentsController;
 use App\Http\Controllers\Api\OrdersController;
 use App\Http\Controllers\Api\ProductReviewsController;
@@ -17,16 +19,18 @@ Route::post('login', [SessionController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function() {
 
       Route::post('logout', [SessionController::class, 'destroy']);
-//    Brands
-  Route::controller(BrandsController::class)->group( function () {
+//      Admin Routes
+
+    //    Brands
+  Route::middleware('isAdmin')->controller(BrandsController::class)->group( function () {
       Route::get('brands', 'index');
       Route::post('brand', 'store');
       Route::post('brand/update/{brand}','update');
       Route::post('brand/delete/{brand}','destroy');
   });
 
-//    Categories
-  Route::controller(CategoriesController::class)->group( function () {
+//     Categories
+  Route::middleware('isAdmin')->controller(CategoriesController::class)->group( function () {
       Route::get('categories','index');
       Route::post('category','store');
       Route::post('category/update/{category}','update');
@@ -34,25 +38,41 @@ Route::middleware('auth:sanctum')->group(function() {
   });
 
 //    Products
-  Route::controller(ProductsController::class)->group(function (){
+  Route::middleware('isAdmin')->controller(ProductsController::class)->group(function (){
         Route::get('products', 'index');
         Route::post('product', 'store');
         Route::post('product/update/{product}', 'update');
         Route::post('product/delete/{product}', 'destroy');
   });
-//     Product Reviews
-  Route::controller(ProductReviewsController::class)->group( function () {
-        Route::post('product/{product}/review' ,'store');
-        Route::get('product/{product}/reviews/show' ,'show');
-        Route::post('product/review/{productReview}/delete' ,'destroy');
+//  Inventory
+  Route::middleware('isAdmin')->controller(InventoryController::class)->group(function (){
+        Route::post('product/{product}/stock/store', 'store');
   });
+//  User Routes
+
+  //     Product Reviews
+  Route::prefix('product')->controller(ProductReviewsController::class)->group( function () {
+        Route::post('{product}/review' ,'store');
+        Route::get('{product}/reviews/show' ,'show');
+        Route::post('review/{productReview}/delete' ,'destroy');
+  });
+//  Cart
+    Route::prefix('cart')->controller(CartController::class)->group(function () {
+          Route::get('cart-items', 'index');
+          Route::post('add-to-cart', 'store');
+          Route::post('delete-cart-items', 'destroy');
+    });
+
 //     Orders
-   Route::controller(OrdersController::class)->group(function (){
-       Route::get('orders', 'index');
-       Route::post('orders/place-order', 'store');
-       Route::post('orders/cancel/{order}', 'cancel');
-       Route::post('orders/delete/{order}', 'destroy');
-   });
+    Route::prefix('orders')->controller(OrdersController::class)->group(function (){
+        Route::get('/', 'index'); // This will handle 'GET /orders'
+        Route::post('place-order/{order}', 'placeOrder'); // This will handle 'POST /orders/place-order/{order}'
+        Route::post('cancel/{order}', 'cancel'); // This will handle 'POST /orders/cancel/{order}'
+        Route::post('delete/{order}', 'destroy'); // This will handle 'POST /orders/delete/{order}'
+    });
+
+    Route::get('order/track', [OrdersController::class, 'trackOrder']); // This will handle 'GET /order/track'
+
 //   Order Payments
    Route::controller(OrderPaymentsController::class)->group(function () {
         Route::post('order/payments/{order}', 'store');

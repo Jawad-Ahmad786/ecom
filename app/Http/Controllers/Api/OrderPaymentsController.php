@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderPayments\StoreRequest;
 use App\Models\Order;
 use App\Services\OrderPaymentsService;
+use Illuminate\Http\JsonResponse;
 
 class OrderPaymentsController extends Controller
 {
@@ -15,7 +16,7 @@ class OrderPaymentsController extends Controller
     {
         $this->orderPaymentsService = $orderPaymentsService;
     }
-    public function store(StoreRequest $request, Order $order)
+    public function store(StoreRequest $request, Order $order): JsonResponse
     {
         $data = $request->validated();
         $paymentResponse = $this->orderPaymentsService->store($data, $order);

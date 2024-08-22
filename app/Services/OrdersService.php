@@ -4,58 +4,83 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\OrderStatus;
-use App\Models\Product;
+use App\Models\Shipment;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-
+use App\ProductStock;
 class OrdersService
 {
+    use ProductStock;
+    protected ShipmentsService $shipmentsService;
 
-    public function index()
+    public function __construct(ShipmentsService $shipmentsService)
     {
-        return Auth::user()->orders()->with('items')->get();
-
+        $this->shipmentsService = $shipmentsService;
     }
-
-    public function store($data)
+    public function index(): array
     {
-        try
-        {
-            return Order::create([
-                'user_id' => Auth::user()->id,
-                'tracking_no' => Str::uuid(),
-                'grand_total' => $this->calculateTotal($data['product_ids'], $data['quantity']),
-            ]);
-        } catch (\Exception $e)
-        {
-            return false;
-        }
+        $orders = Order::with('items')->where('user_id', Auth::user()->id)->get();
+        $filteredOrders = [];
+      foreach ($orders as $order){
+          if(!Order::latestPendingOrder($order)){
+            $filteredOrders[] = $order;
+            }
+      }
+       return $filteredOrders;
     }
-    public function calculateTotal($ids, $quantities)
+    public function placeOrder(Order $order, int $courierFeeId): bool|Shipment
     {
-         $products = Product::whereIn('id', $ids)->get();
-         $total = 0;
-       foreach($products as $key => $product){
-           $quantity = $quantities[$key];
-           $total += $product->price * $quantity;
-       }
-        return $total;
+        $processingStatus = OrderStatus::where('name', 'processing')->first()->id;
+      if(Order::processing($order)){
+           return false;
+      }
+//     Create Shipment for the order
+        $shipment = $this->shipmentsService->store($order->id, $courierFeeId);
+        $order->statuses()->attach($processingStatus);
+        return $shipment;
     }
-
-    public function cancel($order)
+    public function cancel(Order $order): array
     {
         $cancelStatus = OrderStatus::where('name', 'cancelled')->first()->id;
-         if($order->statuses()->where('order_status_id', $cancelStatus)->exists()){
-             return false;
-         }
+
+        if(Order::cancelled($order)){
+            return [
+                 'status' => 'error',
+                 'message' => 'Order is already cancelled',
+                 'status_code' => 400
+            ];
+        }
+           $this->manageStock($order);
            $order->statuses()->attach($cancelStatus);
-           return true;
+           return [
+               'status' => 'success',
+               'message' => 'Order has been cancelled successfully',
+               'status_code' => 200
+           ];
     }
-    public function destroy($order)
+    public function destroy(Order $order): bool
     {
+        if(Order::completed($order)){
+            return false;
+        }
+//    Checking for order not cancelled to manage stock in this case
+        if(!Order::cancelled($order)){
+          $this->manageStock($order);
+      }
+      if($order->shipment){
+          $order->shipment()->delete();
+      }
         $order->items()->delete();
+        $order->payments()->delete();
         $order->statuses()->detach();
         $order->delete();
         return true;
+    }
+    public function trackOrder(string $tracking_no): bool|OrderStatus
+    {
+        $order = Auth::user()->orders()->where('tracking_no', $tracking_no)->first();
+      if(!$order){
+           return false;
+      }
+        return $order->statuses()->orderBy('pivot_created_at', 'desc')->first();
     }
 }

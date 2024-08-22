@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Brands\StoreRequest;
 use App\Http\Requests\Brands\UpdateRequest;
 use App\Models\Brand;
+use Illuminate\Http\JsonResponse;
 
 class BrandsController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $brands = Brand::all();
      if($brands->isEmpty()){
@@ -22,7 +23,7 @@ class BrandsController extends Controller
             'brands' => $brands
         ], 200);
     }
-   public function store(StoreRequest $request)
+   public function store(StoreRequest $request): JsonResponse
    {
         $brand = Brand::create($request->validated());
 
@@ -32,7 +33,7 @@ class BrandsController extends Controller
         ], 201);
    }
 
-   public function update(UpdateRequest $request, Brand $brand)
+   public function update(UpdateRequest $request, Brand $brand): JsonResponse
    {
        $brand->update($request->validated());
 
@@ -42,7 +43,7 @@ class BrandsController extends Controller
        ], 200);
    }
 
-   public function destroy(Brand $brand)
+   public function destroy(Brand $brand): JsonResponse
    {
        $brand->delete();
 
