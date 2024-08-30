@@ -16,14 +16,21 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('sku');
-            $table->foreignIdFor(Category::class)->constrained()->onCascadeDelete();;
-            $table->foreignIdFor(Brand::class)->constrained()->onCascadeDelete();;
+            $table->string('sku')->unique();
+            $table->string('slug')->unique();
+            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();;
+            $table->foreignIdFor(Brand::class)->constrained()->cascadeOnDelete();;
             $table->text('description');
+            $table->text('short_description')->nullable();
             $table->integer('stock');
-            $table->float('price', 10, 0);
+            $table->decimal('price', 8, 2);
+            $table->string('dimensions')->nullable();
+            $table->boolean('status')->default(true)->comment('0 means inactive and 1 means active');
+            $table->boolean('featured')->default(false);
+            $table->decimal('discount', 8, 2)->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

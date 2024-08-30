@@ -1,10 +1,9 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Order;
-use App\Models\OrderStatus;
 
 return new class extends Migration
 {
@@ -13,10 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_status', function (Blueprint $table) {
+        Schema::create('shipments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Order::class)->constrained()->onCascadeDelete();
-            $table->foreignIdFor(OrderStatus::class)->constrained()->onCascadeDelete();
+            $table->foreignIdFor(Order::class)->constrained()->cascadeOnDelete();
+            $table->string('courier_city_fee_id');
+            $table->timestamp('date');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_statuses');
+        Schema::dropIfExists('shipments');
     }
 };

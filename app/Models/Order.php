@@ -2,25 +2,74 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
     use HasFactory;
 
-    public function user()
+    protected $fillable = ['user_id', 'tracking_no', 'customer_name', 'customer_email', 'customer_address', 'customer_mobile_no', 'city_id', 'shipping_method_id', 'grand_total'];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-    public function orderItems()
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
-
-    public function statuses()
+    public function statuses(): BelongsToMany
     {
-        return $this->belongsToMany(OrderStatus::class);
+        return $this->belongsToMany(OrderStatus::class)->withTimestamps();
+    }
+    public function payments(): HasMany
+    {
+        return $this->hasMany(OrderPayment::class);
+    }
+    public function shipment(): HasOne
+    {
+        return $this->hasOne(Shipment::class);
+    }
+    public static function pending(Order $order): bool
+    {
+        $pendingStatus = OrderStatus::where('name', 'pending')->first()->id;
+        return $order->statuses()->where('order_id', $order->id)->where('order_status_id', $pendingStatus)->exists();
+    }
+    public static function processing(Order $order): bool
+    {
+        $processingStatus = OrderStatus::where('name', 'processing')->first()->id;
+        return $order->statuses()->where('order_id', $order->id)->where('order_status_id', $processingStatus)->exists();
+    }
+    public static function completed(Order $order): bool
+    {
+        $completeStatus = OrderStatus::where('name', 'completed')->first()->id;
+        return $order->statuses()->where('order_status_id', $completeStatus)->exists();
+    }
+    public static function cancelled(Order $order): bool
+    {
+        $cancelledStatus = OrderStatus::where('name', 'cancelled')->first()->id;
+        return $order->statuses()->where('order_status_id', $cancelledStatus)->exists();
+    }
+    public static function latestPendingOrder(Order $order): bool
+    {
+        $latestStatus = $order->statuses()->orderBy('pivot_created_at', 'desc')->first();
+        return $latestStatus->pivot->order_status_id === 1;
+    }
+    protected function pendingTotal(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // Sum up all the payments made for this order
+                $totalPaid = $this->payments()->sum('paid_amount');
+                // Calculate the pending amount by subtracting the total paid from the grand total
+                return $this->grand_total - $totalPaid;
+            }
+        );
     }
 }

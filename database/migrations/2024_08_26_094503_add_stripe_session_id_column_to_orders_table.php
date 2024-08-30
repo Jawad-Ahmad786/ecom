@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cities', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('orders', function (Blueprint $table) {
+             $table->string('stripe_session_id')->after('grand_total')->nullable();
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cities');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropColumn('stripe_session_id');
+        });
     }
 };

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Order::class)->constrained()->onCascadeDelete();
-            $table->foreignIdFor(Product::class)->constrained()->onCascadeDelete();
+            $table->foreignIdFor(Order::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->integer('quantity');
             $table->float('unit_price', 10, 0);
             $table->float('sub_total', 10, 0);

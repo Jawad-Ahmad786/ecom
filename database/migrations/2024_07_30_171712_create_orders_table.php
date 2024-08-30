@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\OrderStatus;
+use App\Models\City;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +15,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();
-            $table->foreignIdFor(OrderStatus::class)->constrained()->onCascadeDelete();
-            $table->string('date');
-            $table->float('grand_total', 10, 0);
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->uuid('tracking_no')->unique();
+            $table->decimal('grand_total', 10, 0);
             $table->timestamps();
         });
     }
