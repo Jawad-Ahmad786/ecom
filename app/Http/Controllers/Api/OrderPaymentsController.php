@@ -7,6 +7,7 @@ use App\Http\Requests\OrderPayments\StoreRequest;
 use App\Models\Order;
 use App\Services\OrderPaymentsService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class OrderPaymentsController extends Controller
 {
@@ -19,6 +20,11 @@ class OrderPaymentsController extends Controller
     public function store(StoreRequest $request, Order $order): JsonResponse
     {
         $data = $request->validated();
+        if(!($order->user_id ===  Auth::user()->id)){
+          return response()->json([
+              'message' => 'You are not authorize for this action'
+          ], 403);
+      }
         $paymentResponse = $this->orderPaymentsService->store($data, $order);
 
         if ($paymentResponse['status'] === 'error') {
