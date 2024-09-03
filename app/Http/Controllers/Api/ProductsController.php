@@ -8,9 +8,6 @@ use App\Http\Requests\Products\UpdateRequest;
 use App\Models\Product;
 use App\Services\ProductImagesService;
 use App\Services\ProductsService;
-use Illuminate\Http\Request;
-
-use function Pest\Laravel\json;
 
 class ProductsController extends Controller
 {

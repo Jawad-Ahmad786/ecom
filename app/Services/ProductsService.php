@@ -42,7 +42,7 @@ class ProductsService
             $query->whereBetween('price', [$minPrice, $maxPrice]);
         });
 
-        return $products->get();
+        return $products->where('status', 1)->with('category', 'brand')->get();
     }
     public function store($data)
     {
