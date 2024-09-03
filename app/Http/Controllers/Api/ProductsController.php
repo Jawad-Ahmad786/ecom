@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Services\ImagesService;
 use App\Services\ProductsService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
@@ -54,17 +55,26 @@ class ProductsController extends Controller
     public function update(UpdateRequest $request, Product $product): JsonResponse
     {
         $data = $request->validated();
-
+        DB::beginTransaction();
+      try {
 //        Update Product
           $this->productsService->update($product, $data);
 
 //         Update Product Images
-          $this->imagesService->storeImages($product, $this->directory, $data['images']);
-
+          if ($request->has('images')) {
+              $this->imagesService->storeImages($product, $this->directory, $data['images']);
+          }
+          DB::commit();
           return response()->json([
               'message' => 'Product Updated Successfully',
               'product' => $product
           ], 200);
+      } catch(\Exception $e){
+          DB::rollback();
+          return response()->json([
+              'message' => 'An issue occurred while updating',
+          ], 500);
+      }
     }
     public function destroy(Product $product): JsonResponse
     {
