@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ImagesService
 {
-    public function storeImages(Product $product, array $images): bool|string
+    public function storeImages(object $model, string $directory, array $images): bool|string
     {
         try {
           foreach ($images as $image) {
-              $path = $image->store('products');
-              $product->images()->create([
+              $path = $image->store($directory);
+              $model->images()->create([
                   'image' => $path
               ]);
           }

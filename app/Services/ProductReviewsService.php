@@ -22,12 +22,18 @@ class ProductReviewsService
     {
         return $product->reviews;
     }
-    public function destroy(int $proudctReviewId): void
+    public function destroy(int $proudctReviewId): bool
     {
-       $productReview = ProductReview::findOrFail($proudctReviewId);
-     if($productReview->images){
-         $this->imagesService->deleteImages($productReview);
+     try{
+         $productReview = ProductReview::findOrFail($proudctReviewId);
+         if($productReview->images){
+             $this->imagesService->deleteImages($productReview);
+         }
+         return true;
+     }catch (\Exception $e){
+         return false;
      }
+
 
     }
 }
