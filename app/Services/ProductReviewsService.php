@@ -8,6 +8,12 @@ use Illuminate\Support\Collection;
 
 class ProductReviewsService
 {
+    protected ImagesService $imagesService;
+
+    public function __construct(ImagesService $imagesService)
+    {
+        $this->imagesService = $imagesService;
+    }
     public function store(Product $product, array $data): ProductReview
     {
         return $product->reviews()->create($data);
@@ -18,6 +24,10 @@ class ProductReviewsService
     }
     public function destroy(int $proudctReviewId): void
     {
-        ProductReview::findOrFail($proudctReviewId)->delete();
+       $productReview = ProductReview::findOrFail($proudctReviewId);
+     if($productReview->images){
+         $this->imagesService->deleteImages($productReview);
+     }
+
     }
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Products\StoreRequest;
 use App\Http\Requests\Products\UpdateRequest;
 use App\Models\Product;
-use App\Services\ProductImagesService;
+use App\Services\ImagesService;
 use App\Services\ProductsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,10 +15,10 @@ use function Pest\Laravel\json;
 
 class ProductsController extends Controller
 {
-    protected ProductImagesService $productImagesService;
+    protected ImagesService $productImagesService;
 
     protected ProductsService $productsService;
-    public function __construct(ProductImagesService $productImagesService, ProductsService $productsService)
+    public function __construct(ImagesService $productImagesService, ProductsService $productsService)
     {
         $this->productImagesService = $productImagesService;
         $this->productsService = $productsService;
