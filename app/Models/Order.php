@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,5 +60,16 @@ class Order extends Model
     {
         $latestStatus = $order->statuses()->orderBy('pivot_created_at', 'desc')->first();
         return $latestStatus->pivot->order_status_id === 1;
+    }
+    protected function pendingTotal(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // Sum up all the payments made for this order
+                $totalPaid = $this->payments()->sum('paid_amount');
+                // Calculate the pending amount by subtracting the total paid from the grand total
+                return $this->grand_total - $totalPaid;
+            }
+        );
     }
 }

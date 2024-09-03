@@ -9,7 +9,7 @@ class ProductsService
 {
     public function index(): Collection
     {
-        return Product::all();
+        return Product::with('brand', 'category')->where('status', 1)->get();
     }
     public function store(array $data): Product
     {
