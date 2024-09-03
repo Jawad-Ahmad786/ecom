@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CardPaymentsController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\InventoryController;
@@ -40,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function() {
         });
         //    Products
         Route::controller(ProductsController::class)->group(function (){
-            Route::get('products', 'index');
             Route::post('product', 'store');
             Route::post('product/update/{product}', 'update');
             Route::post('product/delete/{product}', 'destroy');
@@ -90,7 +90,21 @@ Route::middleware('auth:sanctum')->group(function() {
 //   Stripe Checkout
     Route::controller(CheckoutController::class)->group(function () {
         Route::post('checkout', 'checkout');
+//        Route::get('success', 'success')->name('checkout.success');
+//        Route::get('cancel', 'cancel')->name('checkout.cancel');
     });
 });
-Route::get('cancel', [CheckoutController::class,  'cancel'])->name('checkout.cancel');
-Route::get('success', [CheckoutController::class, 'success'])->name('checkout.success');
+//   Stripe Card Payments (Payment Element)
+
+//Route::get('cancel', [CheckoutController::class,  'cancel'])->name('checkout.cancel');
+//Route::get('success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::controller(CardPaymentsController::class)->group(function (){
+    Route::get('/payment/{orderId}', 'showPaymentForm')->name('payment.form');
+    Route::post('/create-payment-intent','createPaymentIntent')->name('payment.intent');
+    Route::get('payment-complete', 'paymentComplete')->name('payment.complete');
+});
+Route::controller(CheckoutController::class)->group(function (){
+    Route::get('success', 'success')->name('checkout.success');
+    Route::get('cancel', 'cancel')->name('checkout.cancel');
+});
+Route::get('products', [ProductsController::class, 'index']);
