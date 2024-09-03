@@ -6,28 +6,46 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductReviews\StoreRequest;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Services\ImagesService;
 use App\Services\ProductReviewsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductReviewsController extends Controller
 {
+    public $directory = 'product_reviews';
+    protected ImagesService $imagesService;
+
   protected ProductReviewsService $productReviewsService;
 
-  public function __construct(ProductReviewsService $productReviewsService)
+  public function __construct(ProductReviewsService $productReviewsService, ImagesService $imagesService)
   {
       $this->productReviewsService = $productReviewsService;
+      $this->imagesService = $imagesService;
   }
     public function store(StoreRequest $request, Product $product): JsonResponse
   {
         $data = $request->validated();
         $data['user_id'] = Auth::user()->id;
-        $review = $this->productReviewsService->store($product, $data);
+        DB::beginTransaction();
+      try{
+          $review = $this->productReviewsService->store($product, $data);
+          if($request->has('images')){
+              $this->imagesService->storeImages($review, $this->directory, $request->images);
+          }
+          DB::commit();
+          return response()->json([
+              'message' => 'Review created successfully',
+              'review' => $review
+          ], 201);
+      }  catch (\Exception $e){
+          DB::rollback();
+          return response()->json([
+              'message' => 'An error occurred while creating review',
+          ], 500);
+      }
 
-        return response()->json([
-            'message' => 'Review created successfully',
-            'review' => $review
-        ], 201);
   }
     public function show(Product $product): JsonResponse
     {
@@ -44,10 +62,18 @@ class ProductReviewsController extends Controller
     }
   public function destroy(ProductReview $productReview): JsonResponse
   {
-      $this->productReviewsService->destroy($productReview->id);
-
-      return response()->json([
-          'message' => 'Review deleted successfully',
-      ], 200);
+     DB::beginTransaction();
+   try{
+       $this->productReviewsService->destroy($productReview->id);
+       DB::commit();
+       return response()->json([
+           'message' => 'Review deleted successfully',
+       ], 200);
+   }  catch(\Exception $e){
+       DB::rollback();
+       return response()->json([
+           'message' => 'An issue occurred while deleting review and images',
+       ], 200);
+   }
   }
 }

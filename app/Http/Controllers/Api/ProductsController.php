@@ -9,12 +9,10 @@ use App\Models\Product;
 use App\Services\ImagesService;
 use App\Services\ProductsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-
-use function Pest\Laravel\json;
 
 class ProductsController extends Controller
 {
+    public $directory = 'products';
     protected ImagesService $productImagesService;
 
     protected ProductsService $productsService;
@@ -46,7 +44,7 @@ class ProductsController extends Controller
         $product = $this->productsService->store($data);
 
 //      Store Product Images
-        $this->productImagesService->storeImages($product, $data['images']);
+        $this->productImagesService->storeImages($product, $this->directory, $data['images'], );
 
         return response()->json([
             'message' => 'Product Created Successfully',
@@ -61,7 +59,7 @@ class ProductsController extends Controller
           $this->productsService->update($product, $data);
 
 //         Update Product Images
-          $this->productImagesService->storeImages($product, $data['images']);
+          $this->productImagesService->storeImages($product, $this->directory, $data['images']);
 
           return response()->json([
               'message' => 'Product Updated Successfully',
