@@ -28,6 +28,7 @@ class ImagesService
            foreach($model->images as $image)
            {
              if(!empty($images)){
+                if(in_array($image->id, $images))
                  if(Storage::exists($image->image)){
                      Storage::delete($image->image);
                  }
