@@ -13,12 +13,12 @@ use Illuminate\Http\JsonResponse;
 class ProductsController extends Controller
 {
     public $directory = 'products';
-    protected ImagesService $productImagesService;
+    protected ImagesService $imagesService;
 
     protected ProductsService $productsService;
-    public function __construct(ImagesService $productImagesService, ProductsService $productsService)
+    public function __construct(ImagesService $imagesService, ProductsService $productsService)
     {
-        $this->productImagesService = $productImagesService;
+        $this->imagesService = $imagesService;
         $this->productsService = $productsService;
     }
 
@@ -44,7 +44,7 @@ class ProductsController extends Controller
         $product = $this->productsService->store($data);
 
 //      Store Product Images
-        $this->productImagesService->storeImages($product, $this->directory, $data['images'], );
+        $this->imagesService->storeImages($product, $this->directory, $data['images'], );
 
         return response()->json([
             'message' => 'Product Created Successfully',
@@ -59,7 +59,7 @@ class ProductsController extends Controller
           $this->productsService->update($product, $data);
 
 //         Update Product Images
-          $this->productImagesService->storeImages($product, $this->directory, $data['images']);
+          $this->imagesService->storeImages($product, $this->directory, $data['images']);
 
           return response()->json([
               'message' => 'Product Updated Successfully',
@@ -68,7 +68,7 @@ class ProductsController extends Controller
     }
     public function destroy(Product $product): JsonResponse
     {
-        $this->productImagesService->deleteImages($product);
+        $this->imagesService->deleteImages($product);
         $this->productsService->destroy($product);
         return response()->json([
            'message' => 'Product Deleted Successfully',
