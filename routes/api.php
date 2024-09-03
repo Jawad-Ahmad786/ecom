@@ -45,13 +45,13 @@ Route::middleware('auth:sanctum')->group(function() {
             Route::post('product/update/{product}', 'update');
             Route::post('product/delete/{product}', 'destroy');
         });
-        //  Inventory
-        Route::controller(InventoryController::class)->group(function (){
-            Route::post('product/{product}/stock/store', 'store');
-        });
         //    Product Images
         Route::controller(ProductImagesController::class)->group(function (){
             Route::post('product/{product}/images/delete', 'destroy');
+        });
+        //  Inventory
+        Route::controller(InventoryController::class)->group(function (){
+            Route::post('product/{product}/stock/store', 'store');
         });
     });
 
@@ -63,9 +63,9 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('review/{productReview}/update', 'update');
         Route::post('review/{productReview}/delete' ,'destroy');
     });
-//     Product Review Images
-    Route::prefix('product')->controller(ProductReviewsImagesController::class)->group(function (){
-        Route::post('product-review/{productReview}/images/delete', 'destroy');
+//  Product Review Images
+    Route::prefix('product')->controller(ProductReviewsImagesController::class)->group( function () {
+       Route::post('product-review/{productReview}/images/delete', 'destroy');
     });
 //  Cart
     Route::prefix('cart')->controller(CartController::class)->group(function () {

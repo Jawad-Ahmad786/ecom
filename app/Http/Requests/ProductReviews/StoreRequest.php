@@ -25,6 +25,8 @@ class StoreRequest extends FormRequest
         return [
              'review' => ['required', 'string', 'max:255'],
              'rating' => ['required', 'integer', Rule::in([1,2,3,4,5])],
+             'images' => ['sometimes', 'array'],
+             'images.*' => ['image', 'mimes:jpeg,jpg,png,giff', 'max:2048']
         ];
     }
     public function messages(): array

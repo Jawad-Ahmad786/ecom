@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductReviews\StoreRequest;
+use App\Http\Requests\ProductReviews\UpdateRequest;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Services\ImagesService;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProductReviewsController extends Controller
 {
-    public $directory = 'product_reviews';
+    public $directory = 'product-reviews';
     protected ImagesService $imagesService;
 
   protected ProductReviewsService $productReviewsService;
@@ -46,6 +47,27 @@ class ProductReviewsController extends Controller
           ], 500);
       }
 
+  }
+  public function update(UpdateRequest $request, ProductReview $productReview)
+  {
+        $data = $request->validated();
+        DB::beginTransaction();
+      try{
+          $updateReview = $this->productReviewsService->update($productReview, $data);
+          if($request->has('images')){
+              $this->imagesService->storeImages($productReview, $this->directory, $request->images);
+          }
+          DB::commit();
+          return response()->json([
+              'message' => 'Review Updated Successfully',
+              'review' => $updateReview
+          ], 200);
+      }  catch(\Exception $e){
+          DB::rollback();
+          return response()->json([
+              'message' => 'An issue occurred',
+          ], 500);
+      }
   }
     public function show(Product $product): JsonResponse
     {

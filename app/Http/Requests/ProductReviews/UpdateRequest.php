@@ -26,7 +26,7 @@ class UpdateRequest extends FormRequest
             'review' => ['required', 'string', 'max:255'],
             'rating' => ['required', 'integer', Rule::in([1,2,3,4,5])],
             'images' => ['sometimes', 'array'],
-            'images.*' => ['image', 'mimes:jgp,png,gif', 'max:2048']
+            'images.*' => ['image', 'mimes:jpeg,jgp,png,gif', 'max:2048']
         ];
     }
     public function messages(): array
@@ -38,4 +38,3 @@ class UpdateRequest extends FormRequest
         return $attributes;
     }
 }
-

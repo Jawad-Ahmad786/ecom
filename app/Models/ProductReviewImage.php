@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductReviewImage extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['image'];
+    protected $fillable = ['product_review_id', 'image'];
 
     public function reviews()
     {

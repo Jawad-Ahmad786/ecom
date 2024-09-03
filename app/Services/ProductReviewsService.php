@@ -18,6 +18,10 @@ class ProductReviewsService
     {
         return $product->reviews()->create($data);
     }
+    public function update(ProductReview $productReview, array $data): bool
+    {
+        return $productReview->update($data);
+    }
     public function show(Product $product): Collection
     {
         return $product->reviews;
@@ -29,6 +33,7 @@ class ProductReviewsService
          if($productReview->images){
              $this->imagesService->deleteImages($productReview);
          }
+         $productReview->delete();
          return true;
      }catch (\Exception $e){
          return false;

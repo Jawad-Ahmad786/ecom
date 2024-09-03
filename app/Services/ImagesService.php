@@ -19,7 +19,7 @@ class ImagesService
           }
           return true;
       } catch(\Exception $e){
-           return "An error occured while uploading images.";
+           return "An error occurred while uploading images.";
       }
     }
     public function deleteImages(object $model, array $images= []): bool
@@ -27,12 +27,13 @@ class ImagesService
        try{
            foreach($model->images as $image)
            {
-             if(!empty($images)){
-                if(in_array($image->id, $images))
-                 if(Storage::exists($image->image)){
-                     Storage::delete($image->image);
+             if(!empty($images)) {
+                 if (in_array($image->id, $images)) {
+                     if (Storage::exists($image->image)) {
+                         Storage::delete($image->image);
+                     }
+                     $image->delete();
                  }
-                 $image->delete();
              }
               else{
                   if(Storage::exists($image->image)){
