@@ -25,7 +25,6 @@ class ProductReviewsImagesController extends Controller
             ], 403);
        }
             $images = json_decode($request->images, true);
-
             $imagesDeleted = $this->imagesService->deleteImages($productReview, $images);
             if(!$imagesDeleted){
                 return response()->json([

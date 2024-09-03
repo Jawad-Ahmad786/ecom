@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderPaymentsController;
 use App\Http\Controllers\Api\OrdersController;
+use App\Http\Controllers\Api\ProductImagesController;
 use App\Http\Controllers\Api\ProductReviewsController;
+use App\Http\Controllers\Api\ProductReviewsImagesController;
 use App\Http\Controllers\Api\ProductsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RegisterController;
@@ -48,14 +50,23 @@ Route::middleware('auth:sanctum')->group(function() {
   Route::middleware('isAdmin')->controller(InventoryController::class)->group(function (){
         Route::post('product/{product}/stock/store', 'store');
   });
+//  Product Images
+  Route::controller(ProductImagesController::class)->group(function (){
+        Route::post('product/{product}/images/delete', 'destroy');
+  });
 //  User Routes
 
   //     Product Reviews
   Route::prefix('product')->controller(ProductReviewsController::class)->group( function () {
         Route::post('{product}/review' ,'store');
         Route::get('{product}/reviews/show' ,'show');
+        Route::post('review/{productReview}/update' ,'update');
         Route::post('review/{productReview}/delete' ,'destroy');
   });
+//  Product Review Images
+    Route::prefix('product')->controller(ProductReviewsImagesController::class)->group( function () {
+       Route::post('product-review/{productReview}/images/delete', 'destroy');
+    });
 //  Cart
     Route::prefix('cart')->controller(CartController::class)->group(function () {
           Route::get('cart-items', 'index');
