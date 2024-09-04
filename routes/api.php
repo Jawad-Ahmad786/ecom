@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function() {
         });
         //    Products
         Route::controller(ProductsController::class)->group(function (){
-            Route::get('products', 'index');
             Route::post('product', 'store');
             Route::post('product/update/{product}', 'update');
             Route::post('product/delete/{product}', 'destroy');
@@ -97,8 +96,6 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 //   Stripe Card Payments (Payment Element)
 
-//Route::get('cancel', [CheckoutController::class,  'cancel'])->name('checkout.cancel');
-//Route::get('success', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::controller(CardPaymentsController::class)->group(function (){
     Route::get('/payment/{orderId}', 'showPaymentForm')->name('payment.form');
     Route::post('/create-payment-intent','createPaymentIntent')->name('payment.intent');
@@ -109,5 +106,3 @@ Route::controller(CheckoutController::class)->group(function (){
     Route::get('cancel', 'cancel')->name('checkout.cancel');
 });
 Route::get('products', [ProductsController::class, 'index']);
-Route::get('cancel', [CheckoutController::class,  'cancel'])->name('checkout.cancel');
-Route::get('success', [CheckoutController::class, 'success'])->name('checkout.success');
