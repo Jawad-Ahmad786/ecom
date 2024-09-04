@@ -21,11 +21,15 @@ class DatabaseSeeder extends Seeder
             OrderStatusSeeder::class,
             PaymentMethodsSeeder::class,
             CourierCityFeeSeeder::class,
+            BrandsSeeder::class,
+            CategoriesSeeder::class,
+        ]);
         // User::factory(10)->create();
 
 //        User::factory()->create([
 //            'name' => 'Test User',
 //            'email' => 'test@example.com',
 //        ]);
+
     }
 }
