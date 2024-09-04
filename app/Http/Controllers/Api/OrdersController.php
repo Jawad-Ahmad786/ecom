@@ -66,6 +66,11 @@ class OrdersController extends Controller
     }
     public function cancel(Order $order): JsonResponse
     {
+    if(Order::completed($order)){
+        return response()->json([
+            'message' => 'Completed order cannot be cancelled'
+        ], 400);
+    }
        $cancelOrder = $this->ordersService->cancel($order);
        if($cancelOrder['status'] === 'error')
        {
