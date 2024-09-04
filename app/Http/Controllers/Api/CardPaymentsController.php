@@ -62,7 +62,7 @@ class CardPaymentsController extends Controller
             $completedStatus = OrderStatus::where('name', 'completed')->first()->id;
             $order->statuses()->attach($completedStatus);
             $order->payments()->create([
-                'payment_method_id' => 2,
+                'payment_method_id' => 3,
                 'payment_status_id' => 1,
                 'paid_amount' => $order->pending_total
             ]);
