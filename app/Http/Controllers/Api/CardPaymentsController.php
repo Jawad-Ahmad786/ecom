@@ -5,20 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderStatus;
-use App\Services\CardPaymentService;
-use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Illuminate\Http\Request;
 
 class CardPaymentsController extends Controller
 {
-    protected CardPaymentService $cardPaymentService;
-
-    public function __construct(CardPaymentService $cardPaymentService)
-    {
-        $this->cardPaymentService = $cardPaymentService;
-    }
     public function showPaymentForm()
     {
         return view('card-payments.create', ['orderId' => request()->orderId]);
@@ -56,7 +48,6 @@ class CardPaymentsController extends Controller
                 'currency' => 'usd',
                 'metadata' => ['order_id' => $orderId],
             ]);
-
             return response()->json([
                 'clientSecret' => $paymentIntent->client_secret,
             ]);
