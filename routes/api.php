@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function() {
         });
         //    Products
         Route::controller(ProductsController::class)->group(function (){
+            Route::get('products', 'index');
             Route::post('product', 'store');
             Route::post('product/update/{product}', 'update');
             Route::post('product/delete/{product}', 'destroy');
@@ -65,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 //  Product Review Images
     Route::prefix('product')->controller(ProductReviewsImagesController::class)->group( function () {
-       Route::post('product-review/{productReview}/images/delete', 'destroy');
+        Route::post('product-review/{productReview}/images/delete', 'destroy');
     });
 //  Cart
     Route::prefix('cart')->controller(CartController::class)->group(function () {
@@ -108,3 +109,5 @@ Route::controller(CheckoutController::class)->group(function (){
     Route::get('cancel', 'cancel')->name('checkout.cancel');
 });
 Route::get('products', [ProductsController::class, 'index']);
+Route::get('cancel', [CheckoutController::class,  'cancel'])->name('checkout.cancel');
+Route::get('success', [CheckoutController::class, 'success'])->name('checkout.success');

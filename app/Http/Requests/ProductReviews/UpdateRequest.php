@@ -38,3 +38,4 @@ class UpdateRequest extends FormRequest
         return $attributes;
     }
 }
+
