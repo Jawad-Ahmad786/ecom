@@ -15,7 +15,6 @@ class ProductsController extends Controller
 {
     public $directory = 'products';
     protected ImagesService $imagesService;
-
     protected ProductsService $productsService;
     public function __construct(ImagesService $imagesService, ProductsService $productsService)
     {

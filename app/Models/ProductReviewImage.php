@@ -14,4 +14,5 @@ class ProductReviewImage extends Model
     {
         return $this->belongsTo(ProductReview::class);
     }
+
 }
