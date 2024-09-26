@@ -3,14 +3,19 @@
 namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class CartsService
 {
-    public function index(): array
+    public function index(string $deviceId=null, string $userId=null): array
     {
-        $orders = Auth::user()->orders()->with('items')->get();
+      if(!is_null($deviceId)){
+          $orders = Order::where('device_id', $deviceId)->with('items.product')->get();
+      } if(!is_null($userId)){
+          $user = User::find($userId);
+          $orders = $user->orders()->with('items.product')->get();
+      }
         $cartItems = [];
      foreach($orders as $order){
        if(Order::latestPendingOrder($order)){
@@ -41,7 +46,8 @@ class CartsService
                 ];
             }
             return Order::create([
-                'user_id' => Auth::user()->id,
+                'user_id' =>   $data['user_id'] ?? null,
+                'device_id' => $data['device_id'] ?? null,
                 'tracking_no' => Str::uuid(),
                 'grand_total' => $total,
             ]);
@@ -87,14 +93,13 @@ class CartsService
         }
     }
 
-    public function calculateTotal(array $ids, array $quantities): int|float
+    public function calculateTotal(array $ids, array $quantities): int|float|string
     {
         // Retrieve products and map them by ID to preserve the association
         $products = Product::whereIn('id', $ids)->get()->mapWithKeys(function ($product) {
             return [$product->id => $product];
         });
         $total = 0;
-
         // Check if the count of products and quantities match
         if (count($products) !== count($quantities)) {
             return 'mismatch';

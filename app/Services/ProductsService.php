@@ -53,10 +53,12 @@ class ProductsService
     }
     public function store(array $data): Product
     {
+        $data['discount'] = $data['discount'] ?? 0;
         return Product::create($data);
     }
     public function update(Product $product, array $data): bool
     {
+        $data['discount'] = $data['discount'] ?? 0;
         return $product->update($data);
     }
     public function destroy(Product $product): void

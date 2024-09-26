@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Orders\StoreRequest;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Services\CartsService;
 use App\Services\CartItemsService;
@@ -23,9 +23,15 @@ class CartController extends Controller
         $this->cartsService = $cartsService;
         $this->cartItemsService = $cartItemsService;
     }
-        public function index(): JsonResponse
+        public function index(Request $request): JsonResponse
     {
-        $orders = $this->cartsService->index();
+      if($request->header('device_id')){
+          $deviceId = $request->header('device_id');
+          $orders = $this->cartsService->index($deviceId, null);
+      } else{
+          $userId = $request->header('user_id');
+          $orders = $this->cartsService->index(null, $userId);
+      }
 
         if(empty($orders))
         {
@@ -41,7 +47,16 @@ class CartController extends Controller
     public function store(StoreRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $orders = Auth::user()->orders;
+         if($request->header('user_id')){
+           $userId = $request->header('user_id');
+           $user = User::find($userId);
+           $orders = $user->orders;
+           $data['user_id'] = $userId;
+        } else{
+         $deviceId = $request->header('device_id');
+         $orders = Order::where('device_id', $deviceId)->get();
+         $data['device_id'] = $deviceId;
+         }
         $pendingStatusId = OrderStatus::where('name', 'pending')->first()->id;
         $pendingOrder = '';
         // Retrieve the user's order that has only the "pending" status
@@ -96,7 +111,14 @@ class CartController extends Controller
 
     public function destroy(Request $request): JsonResponse
     {
-        $userOrders = Auth::user()->orders;
+      if($request->header('user_id')){
+          $userId = $request->header('user_id');
+          $user = User::find($userId);;
+          $userOrders = $user->orders;
+      } else{
+          $deviceId = $request->header('device_id');
+          $userOrders = Order::where('device_id', $deviceId)->get();
+      }
         $pendingOrder = null;
 
         foreach ($userOrders as $order) {

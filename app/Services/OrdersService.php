@@ -5,16 +5,19 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\Shipment;
+use App\Traits\ProductStock;
 use Illuminate\Support\Facades\Auth;
-use App\ProductStock;
+
 class OrdersService
 {
     use ProductStock;
+    protected CustomerDetailsService $customerDetailsService;
     protected ShipmentsService $shipmentsService;
 
-    public function __construct(ShipmentsService $shipmentsService)
+    public function __construct(ShipmentsService $shipmentsService, CustomerDetailsService $customerDetailsService)
     {
         $this->shipmentsService = $shipmentsService;
+        $this->customerDetailsService = $customerDetailsService;
     }
     public function index(): array
     {
@@ -27,16 +30,17 @@ class OrdersService
       }
        return $filteredOrders;
     }
-    public function placeOrder(Order $order, int $courierFeeId): bool|Shipment
+    public function placeOrder(Order $order, int $courierFeeId, string $name, string $email): bool|Shipment
     {
         $processingStatus = OrderStatus::where('name', 'processing')->first()->id;
       if(Order::processing($order)){
            return false;
       }
 //     Create Shipment for the order
-        $shipment = $this->shipmentsService->store($order->id, $courierFeeId);
-        $order->statuses()->attach($processingStatus);
-        return $shipment;
+          $shipment = $this->shipmentsService->store($order->id, $courierFeeId);
+          $customerDetails = $this->customerDetailsService->addCustomerDetails($order, $name, $email);
+          $order->statuses()->attach($processingStatus);
+           return $shipment;
     }
     public function cancel(Order $order): array
     {

@@ -45,13 +45,18 @@ class CartItemsService
     {
         try {
             foreach ($data['product_ids'] as $key => $product_id) {
-                $unitPrice = Product::find($product_id)->price;
+                $product = Product::find($product_id);
+                $unitPrice = $product->price;
                 $quantity = $data['quantity'][$key];
+                $updatedQty = $product->stock + $quantity;
+                $product->update([
+                    'stock' => $updatedQty
+                ]);
                 $orderItem = $order->items()->where('product_id', $product_id)->first();
 
                 if ($orderItem) {
                     $newQuantity = $orderItem->quantity - $quantity;
-                    if($newQuantity === 0){
+                    if($newQuantity <= 0){
                         $orderItem->delete();
                     }
                     $orderItem->update([

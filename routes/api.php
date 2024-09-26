@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\CardPaymentsController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\CitiesController;
+use App\Http\Controllers\Api\CouriersController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderPaymentsController;
 use App\Http\Controllers\Api\OrdersController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\Api\ProductImagesController;
 use App\Http\Controllers\Api\ProductReviewsController;
 use App\Http\Controllers\Api\ProductReviewsImagesController;
 use App\Http\Controllers\Api\ProductsController;
+use App\Http\Controllers\Api\StripeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\SessionController;
@@ -21,8 +24,8 @@ Route::post('register', [RegisterController::class, 'store']);
 Route::post('login', [SessionController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function() {
-
     Route::post('logout', [SessionController::class, 'destroy']);
+});
 //      Admin Routes
     Route::middleware('isAdmin')->group(function (){
         //    Brands
@@ -67,13 +70,6 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::prefix('product')->controller(ProductReviewsImagesController::class)->group( function () {
         Route::post('product-review/{productReview}/images/delete', 'destroy');
     });
-//  Cart
-    Route::prefix('cart')->controller(CartController::class)->group(function () {
-        Route::get('cart-items', 'index');
-        Route::post('add-to-cart', 'store');
-        Route::post('delete-cart-items', 'destroy');
-    });
-
 //     Orders
     Route::prefix('orders')->controller(OrdersController::class)->group(function (){
         Route::get('/', 'index');
@@ -90,19 +86,28 @@ Route::middleware('auth:sanctum')->group(function() {
 //   Stripe Checkout
     Route::controller(CheckoutController::class)->group(function () {
         Route::post('checkout', 'checkout');
-//        Route::get('success', 'success')->name('checkout.success');
-//        Route::get('cancel', 'cancel')->name('checkout.cancel');
+          Route::get('success', 'success')->name('checkout.success');
+          Route::get('cancel', 'cancel')->name('checkout.cancel');
     });
-});
+//});
+// Stripe Public Key
+    Route::get('stripe-key', [StripeController::class, 'publicKey']);
 //   Stripe Card Payments (Payment Element)
 
-Route::controller(CardPaymentsController::class)->group(function (){
+Route::controller(CardPaymentsController::class)->group(function () {
     Route::get('/payment/{orderId}', 'showPaymentForm')->name('payment.form');
-    Route::post('/create-payment-intent','createPaymentIntent')->name('payment.intent');
+    Route::post('/create-payment-intent', 'createPaymentIntent')->name('payment.intent');
     Route::get('payment-complete', 'paymentComplete')->name('payment.complete');
 });
-Route::controller(CheckoutController::class)->group(function (){
-    Route::get('success', 'success')->name('checkout.success');
-    Route::get('cancel', 'cancel')->name('checkout.cancel');
-});
+//  Products
 Route::get('products', [ProductsController::class, 'index']);
+//  Cart
+Route::prefix('cart')->controller(CartController::class)->group(function () {
+    Route::get('cart-items', 'index');
+    Route::post('add-to-cart', 'store');
+    Route::post('delete-cart-items', 'destroy');
+});
+//  Cities
+Route::get('/cities', [CitiesController::class, 'index']);
+// Couriers
+Route::get('/couriers', [CouriersController::class, 'index']);

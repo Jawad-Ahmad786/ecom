@@ -12,7 +12,6 @@ use App\Services\ProductReviewsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 
 class ProductReviewsController extends Controller
 {

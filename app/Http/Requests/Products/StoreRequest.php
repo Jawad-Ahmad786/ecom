@@ -31,9 +31,9 @@ class StoreRequest extends FormRequest
              'short_description' => ['sometimes', 'string', 'max:255'],
              'stock' => ['required', 'integer'],
              'price' => ['required', 'numeric'],
-             'status' => ['sometimes', 'boolean'],
-             'featured' => ['sometimes', 'boolean'],
-             'discount' => ['sometimes', 'integer'],
+             'status' => ['nullable', 'boolean'],
+             'featured' => ['nullable', 'boolean'],
+             'discount' => ['nullable', 'integer'],
              'images' => ['required', 'array'],
              'images.*' => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
@@ -42,6 +42,8 @@ class StoreRequest extends FormRequest
     {
         $attributes = [
         'images.required' => 'At least one image is required.',
+        'brand_id.required' => 'Brand is required',
+        'category_id' => 'Category is required',
         'category_id.exists' => 'The provided Category does not exist',
         'brand_id.exists' => 'The provided Brand does not exist'
         ];

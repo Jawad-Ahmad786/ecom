@@ -1,7 +1,7 @@
 <header id="header" class="header">
     <div class="top-left">
         <div class="navbar-header">
-            <a class="navbar-brand" href="./"><img src="{{asset('admin-assets/images/logo.png')}}" alt="Logo"></a>
+            <a class="navbar-brand" href="{{ route('dashboard')  }}"><img src="{{asset('admin-assets/images/logo.png')}}" alt="Logo"></a>
             <a class="navbar-brand hidden" href="./"><img src="{{asset('admin-assets/images/logo2.png')}}" alt="Logo"></a>
             <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
         </div>
@@ -55,7 +55,7 @@
                             </div>
                         </a>
                         <a class="dropdown-item media" href="#">
-                            <span class="photo media-left"><img alt="avatar" src="i{{asset('admin-assets/mages/avatar/2.jpg')}}"></span>
+                            <span class="photo media-left"><img alt="avatar" src="{{asset('admin-assets/images/avatar/2.jpg')}}"></span>
                             <div class="message media-body">
                                 <span class="name float-left">Jack Sanders</span>
                                 <span class="time float-right">5 minutes ago</span>
@@ -93,8 +93,10 @@
                     <a class="nav-link" href="#"><i class="fa fa- user"></i>Notifications <span class="count">13</span></a>
 
                     <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
-
-                    <a class="nav-link" href="#"><i class="fa fa-power -off"></i>Logout</a>
+                  <form method="post" action="{{ route('logout') }}">
+                      @csrf
+                    <button class="nav-link" type="submit" style="border: none;background: none;cursor: pointer"><i class="fa fa-power -off"></i>Logout</button>
+                  </form>
                 </div>
             </div>
 

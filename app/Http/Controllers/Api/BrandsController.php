@@ -45,6 +45,11 @@ class BrandsController extends Controller
 
    public function destroy(Brand $brand): JsonResponse
    {
+     if($brand->products()->count() > 0){
+         return response()->json([
+             'message' => 'Cannot delete this brand because it has products.',
+         ], 500);
+     }
        $brand->delete();
 
        return response()->json([

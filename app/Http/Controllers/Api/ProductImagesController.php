@@ -20,7 +20,7 @@ class ProductImagesController extends Controller
     {
         $images = json_decode($request->images, true);
 
-            $imagesDeleted = $this->imagesService->deleteImages($product, $images);
+        $imagesDeleted = $this->imagesService->deleteImages($product, $images);
           if(!$imagesDeleted){
               return response()->json([
                   'message' => 'An issue occurred while deleting images'

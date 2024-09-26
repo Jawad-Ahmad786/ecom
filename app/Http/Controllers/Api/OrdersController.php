@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Services\OrdersService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
@@ -45,13 +44,13 @@ class OrdersController extends Controller
             ->first()
             ->id;
 
-        if(!($order->user_id === Auth::user()->id)){
-            return response()->json([
-                'message' => 'You are not authorized for this action'
-            ], 403);
-        }
+//        if(!($order->user_id === Auth::user()->id)){
+//            return response()->json([
+//                'message' => 'You are not authorized for this action'
+//            ], 403);
+//        }
 
-        $shipment = $this->ordersService->placeOrder($order, $courierFeeId);
+        $shipment = $this->ordersService->placeOrder($order, $courierFeeId, $request->name, $request->email);
 
       if(!$shipment){
           return response()->json([

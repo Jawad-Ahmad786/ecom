@@ -45,6 +45,11 @@ class CategoriesController extends Controller
 
     public function destroy(Category $category): JsonResponse
     {
+        if($category->products()->count() > 0){
+            return response()->json([
+                'message' => 'Cannot delete this category because it has products.',
+            ], 500);
+        }
         $category->delete();
 
         return response()->json([

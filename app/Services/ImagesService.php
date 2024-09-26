@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Services;
-
-use App\Models\Product;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ImagesService

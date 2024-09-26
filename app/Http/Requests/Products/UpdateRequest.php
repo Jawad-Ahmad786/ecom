@@ -23,7 +23,6 @@ class UpdateRequest extends FormRequest
     {
         $product = $this->route('product');
         $productId = $product->id;
-
         return [
             'name' => ['required'],
             'sku' => ['required', 'unique:products,sku,' . $productId],
@@ -34,9 +33,9 @@ class UpdateRequest extends FormRequest
             'short_description' => ['sometimes', 'string', 'max:255'],
             'stock' => ['required', 'integer'],
             'price' => ['required', 'numeric'],
-            'status' => ['sometimes', 'boolean'],
-            'featured' => ['sometimes', 'boolean'],
-            'discount' => ['sometimes', 'integer'],
+            'status' => ['nullable', 'boolean'],
+            'featured' => ['nullable', 'boolean'],
+            'discount' => ['nullable', 'integer'],
             'images' => ['sometimes', 'array'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
@@ -44,6 +43,8 @@ class UpdateRequest extends FormRequest
     public function messages()
     {
         $attributes = [
+            'brand_id.required' => 'Brand is required',
+            'category_id' => 'Category is required',
             'category_id.exists' => 'The provided Category does not exist',
             'brand_id.exists' => 'The provided Brand does not exist'
         ];

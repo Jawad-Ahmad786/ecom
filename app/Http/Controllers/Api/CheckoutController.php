@@ -28,11 +28,11 @@ class CheckoutController extends Controller
                 'message' => 'Order Not Found'
             ], 404);
         }
-        if(!(Auth::user()->id === $order->user_id )){
-            return response()->json([
-                'message' => 'you are not authorized for this action'
-            ], 403);
-        }
+//        if(!(Auth::user()->id === $order->user_id )){
+//            return response()->json([
+//                'message' => 'you are not authorized for this action'
+//            ], 403);
+//        }
         if(Order::cancelled($order) || Order::latestPendingOrder($order)){
             return response()->json([
                 'message' => 'Cannot proceed to checkout'
