@@ -24,7 +24,7 @@ class OrderPaymentsService
                 'message' => 'Payment cannot be processed for cancelled orders',
             ];
         }
-      if($order->grand_total == 0){
+      if($order->pending_total == 0){
           return [
               'status' => 'error',
               'status_code' => 400,
@@ -32,35 +32,30 @@ class OrderPaymentsService
               ];
       }
 
-      if ($data['paid_amount'] > $order->grand_total) {
+      if ($data['paid_amount'] > $order->pending_total) {
           return [
               'status' => 'error',
               'status_code' => 400,
               'message' => 'Paid amount is greater than the total'
              ];
       }
-
-      if($data['paid_amount'] < $order->grand_total){
+      if($data['paid_amount'] < $order->pending_total){
             $paymentStatus = PaymentStatus::where('name', 'partial')->first()->id;
       }
-
-      if($data['paid_amount'] === $order->grand_total){
+      if($data['paid_amount'] == $order->pending_total){
             $paymentStatus = PaymentStatus::where('name', 'paid')->first()->id;
       }
+        $remainingAmount = $order->pending_total - $data['paid_amount'];
+        if($remainingAmount == 0){
+            $completedStatus = OrderStatus::where('name', 'completed')->first()->id;
+            $order->statuses()->attach($completedStatus);
+        }
      $payment = $order->payments()->create([
            'payment_status_id' => $paymentStatus,
            'payment_method_id' => $data['payment_method_id'],
            'paid_amount' => $data['paid_amount'],
        ]);
 
-      $remainingAmount = $order->grand_total - $data['paid_amount'];
-      if($remainingAmount === 0){
-           $completedStatus = OrderStatus::where('name', 'completed')->first()->id;
-           $order->statuses()->attach($completedStatus);
-      }
-      $order->update([
-            'grand_total' => $remainingAmount
-      ]);
         return [
             'status' => 'success',
             'status_code' => 201,

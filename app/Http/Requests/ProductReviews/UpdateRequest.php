@@ -21,26 +21,21 @@ class UpdateRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-
     {
         return [
             'review' => ['required', 'string', 'max:255'],
-            'rating' => ['required', 'integer', Rule::in([1, 2, 3, 4, 5])],
+            'rating' => ['required', 'integer', Rule::in([1,2,3,4,5])],
             'images' => ['sometimes', 'array'],
-            'images.*' => ['image', 'mimes:jpeg,jpg,png,giff', 'max:2048']
+            'images.*' => ['image', 'mimes:jpeg,jgp,png,gif', 'max:2048']
         ];
     }
-
-/**
- * Get the validation messages that apply to the request.
- *
- * @return array<string, string>
- */
     public function messages(): array
     {
-        return [
-            'review.exists' => 'The provided review ID does not exist.',
+        $attributes = [
+            'review' => 'Review is required',
             'rating.in' => 'The rating must be between 1 and 5.',
         ];
+        return $attributes;
     }
 }
+

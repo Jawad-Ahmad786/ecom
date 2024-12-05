@@ -24,7 +24,8 @@ class ProductReviewsImagesController extends Controller
                 'message' => 'You are not authorize to delete these images'
             ], 403);
        }
-            $images = json_decode($request->images, true);
+        $images = json_decode($request->images, true);
+
             $imagesDeleted = $this->imagesService->deleteImages($productReview, $images);
             if(!$imagesDeleted){
                 return response()->json([

@@ -41,7 +41,6 @@ class CartController extends Controller
     public function store(StoreRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $user = Auth::user();
         $orders = Auth::user()->orders;
         $pendingStatusId = OrderStatus::where('name', 'pending')->first()->id;
         $pendingOrder = '';
